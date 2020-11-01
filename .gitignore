@@ -6,3 +6,5 @@
 /**/bin/Release/**
 /**/obj/Debug/**
 /**/obj/Release/**
+/**/obj/**
+/**/bin/**
