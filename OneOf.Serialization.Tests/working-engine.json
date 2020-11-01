@@ -1,0 +1,10 @@
+{
+  "Status": {
+    "Value": "Idle"
+  },
+  "Power": {
+    "Value": 999
+  },
+  "HistoricalIssues": [],
+  "Value": "WorkingEngine"
+}
