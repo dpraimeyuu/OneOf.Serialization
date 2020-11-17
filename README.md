@@ -13,14 +13,12 @@ public class Status : OneOfBase<Idle, Running, Completed> {
     
     // Recommended way of seamless consuming/creating cases
     public Status(Idle idle) : base(0, idle) {}
-
     public Status(Running running) : base(1, null, idle) {}
-
     public Status(Completed completed) : base(2, null, null, completed)
 
-    public static implicit operator Status(Idle value) => value == null? null : new Status(value)
-    public static implicit operator Status(Running value) => value == null? null : new Status(value)
-    public static implicit operator Status(Completed value) => value == null? null : new Status(value)
+    public static implicit operator Status(Idle value) => value == null? null : new Status(value);
+    public static implicit operator Status(Running value) => value == null? null : new Status(value);
+    public static implicit operator Status(Completed value) => value == null? null : new Status(value);
 }
 ```
 
