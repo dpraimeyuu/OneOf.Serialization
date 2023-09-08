@@ -9,8 +9,8 @@ namespace OneOf.Serialization
 {
     public class OneOfCase
     {
-
         public string Value { get; private set; }
+
         public OneOfCase()
         {
             Value = this.GetType().Name;
@@ -37,12 +37,20 @@ namespace OneOf.Serialization
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType != JsonToken.StartObject)
-                return existingValue;
+            if (reader.TokenType == JsonToken.StartObject)
+            {
+                var obj = JObject.Load(reader);
+                var value = DeserializeToDiscriminatedUnion(obj, objectType);
+                return CreateInstance(value);
+            }
+            else if (reader.TokenType == JsonToken.StartArray)
+            {
+                var array = JArray.Load(reader);
+                var valuesArray = DeserializeToDiscriminatedUnionArray(array, objectType);
+                return CreateArrayInstance(valuesArray);
+            }
 
-            var obj = JObject.Load(reader);
-            var instance = DeserializeToDiscriminatedUnion(obj, objectType);
-            return CreateInstance(instance);
+            return existingValue;
         }
 
         private object DeserializeToDiscriminatedUnion(JObject obj, Type objectType)
@@ -59,9 +67,29 @@ namespace OneOf.Serialization
             return null;
         }
 
+        private Array DeserializeToDiscriminatedUnionArray(JArray array, Type objectType)
+        {
+            var arrayArgTypes = objectType?.GenericTypeArguments.ToList() ?? EmptyTypeList;
+            if (arrayArgTypes.Count != 1 || !arrayArgTypes[0].GetInterfaces().Contains(typeof(IOneOf)))
+                return null;
+
+            var oneOfArray = Array.CreateInstance(arrayArgTypes[0], array.Count);
+            for (int i = 0, num = array.Count; i < num; ++i)
+            {
+                string json = array[i].ToString();
+                oneOfArray.SetValue(JsonConvert.DeserializeObject(json, arrayArgTypes[0]), i);
+            }
+            return oneOfArray;
+        }
+
         private T CreateInstance(params object[] paramArray)
         {
             return (T)Activator.CreateInstance(typeof(T), args: paramArray);
+        }
+
+        private T CreateArrayInstance(Array valuesArray)
+        {
+            return (T)Activator.CreateInstance(typeof(T), new object[] { valuesArray });
         }
 
         public override bool CanConvert(Type objectType)

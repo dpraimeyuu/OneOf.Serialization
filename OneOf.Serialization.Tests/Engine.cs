@@ -94,4 +94,10 @@ namespace OneOf.Serialization.Tests {
         [JsonConstructor]
         private Engine() { }
     }
+
+    class Engines
+    {
+        [JsonConverter(typeof(OneOfJsonConverter<List<Engine>>))]
+        public List<Engine> EngineList { get; set; }
+    }
 }
