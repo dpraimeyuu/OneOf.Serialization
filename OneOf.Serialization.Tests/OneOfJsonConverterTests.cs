@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using static OneOf.Serialization.Status;
 
 namespace OneOf.Serialization.Tests
 {
@@ -21,6 +24,24 @@ namespace OneOf.Serialization.Tests
             var json = JsonConvert.SerializeObject(engine, settings);
             var engineJObject = JObject.FromObject(engine);
             json.Should().NotBeNullOrEmpty();
+            json.Should().StartWith("{").And.EndWith("}");
+            engineJObject.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Given_Enumerable_Instance_Of_OneOf_Cases_When_Serializing_Then_Produces_Valid_Json_String()
+        {
+            var engines = new List<Engine> ()
+            {
+                new WorkingEngine(Power.Create(999)),
+                new WorkingEngine(Power.Create(888)),
+            };
+            engines[1].AsT0.Status = new Started(20);
+            var json = JsonConvert.SerializeObject(engines.AsEnumerable(), settings);
+            var enginesJArray = JArray.FromObject(engines.AsEnumerable());
+            json.Should().NotBeNullOrEmpty();
+            json.Should().StartWith("[").And.EndWith("]");
+            enginesJArray.Should().NotBeNull();
         }
 
         [Fact]
@@ -44,11 +65,36 @@ namespace OneOf.Serialization.Tests
         {
             var json = File.ReadAllText("./working-engine.json");
             var engine = JsonConvert.DeserializeObject<Engine>(json);
-            var engineStatus = (engine.Value as WorkingEngine).Status;
             engine.Should().NotBeNull();
             engine.Value.Should().BeOfType<WorkingEngine>();
+            var engineStatus = (engine.Value as WorkingEngine).Status;
             engineStatus.Should().NotBeNull();
             engineStatus.Value.Should().BeOfType<Status.Idle>();
+        }
+
+        [Fact]
+        public void Given_Json_Array_With_OneOf_Cases_When_Deserializing_Then_Produces_Correct_Enumerable_Instance_Of_Cases()
+        {
+            var json = File.ReadAllText("./working-engines-array.json");
+            var engines = JsonConvert.DeserializeObject<IEnumerable<Engine>>(json);
+            engines.Should().NotBeNull();
+
+            var enginesList = engines.ToList();
+
+            var engine0 = enginesList[0];
+            engine0.Should().NotBeNull();
+            engine0.Value.Should().BeOfType<WorkingEngine>();
+            var engine0Status = (engine0.Value as WorkingEngine).Status;
+            engine0Status.Should().NotBeNull();
+            engine0Status.Value.Should().BeOfType<Status.Idle>();
+
+            var engine1 = enginesList[1];
+            engine1.Should().NotBeNull();
+            engine1.Value.Should().BeOfType<WorkingEngine>();
+            var engine1Status = (engine1.Value as WorkingEngine).Status;
+            engine1Status.Should().NotBeNull();
+            engine1Status.Value.Should().BeOfType<Status.Started>();
+            engine1Status.AsT1.Readiness.Equals(20);
         }
 
         [Fact]
