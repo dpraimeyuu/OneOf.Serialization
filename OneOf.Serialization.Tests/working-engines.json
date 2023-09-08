@@ -1,0 +1,25 @@
+{
+  "EngineList": [
+    {
+      "Status": {
+        "Value": "Idle"
+      },
+      "Power": {
+        "Value": 999
+      },
+      "HistoricalIssues": [],
+      "Value": "WorkingEngine"
+    },
+    {
+      "Status": {
+        "Value": "Started",
+        "Readiness": 20
+      },
+      "Power": {
+        "Value": 888
+      },
+      "HistoricalIssues": [],
+      "Value": "WorkingEngine"
+    }
+  ]
+}
