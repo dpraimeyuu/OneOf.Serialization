@@ -59,6 +59,7 @@ namespace OneOf.Serialization.Tests {
 
         public string Value { get; }
     }
+
     class BrokenEngine : OneOfCase
     {
         public Reason Reason { get; }

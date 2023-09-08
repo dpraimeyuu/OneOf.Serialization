@@ -25,6 +25,8 @@ namespace OneOf.Serialization
 
     public class OneOfJsonConverter<T> : JsonConverter
     {
+        private static readonly List<Type> EmptyTypeList = new List<Type> (0);
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value is IOneOf v)
@@ -37,28 +39,24 @@ namespace OneOf.Serialization
         {
             if (reader.TokenType != JsonToken.StartObject)
                 return existingValue;
+
             var obj = JObject.Load(reader);
             var instance = DeserializeToDiscriminatedUnion(obj, objectType);
-
             return CreateInstance(instance);
         }
 
         private object DeserializeToDiscriminatedUnion(JObject obj, Type objectType)
         {
-            var oneOfCaseTypes = objectType?.BaseType?.GenericTypeArguments.ToList() ?? new List<Type>();
-            object result = null;
+            var oneOfCaseTypes = objectType?.BaseType?.GenericTypeArguments.ToList() ?? EmptyTypeList;
             foreach (var oneOfDiscriminatedUnion in oneOfCaseTypes)
             {
                 string json = obj.ToString();
                 var oneOfCase = JsonConvert.DeserializeObject<OneOfCase>(json);
                 if (oneOfCase.Value == oneOfDiscriminatedUnion.Name)
-                {
-                    var subType = JsonConvert.DeserializeObject(json, oneOfDiscriminatedUnion);
-                    return subType;
-                }
+                    return JsonConvert.DeserializeObject(json, oneOfDiscriminatedUnion);
             }
 
-            return result;
+            return null;
         }
 
         private T CreateInstance(params object[] paramArray)
