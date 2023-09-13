@@ -6,7 +6,8 @@ namespace OneOf.Serialization
 {
     [JsonConverter(typeof(OneOfJsonConverter<Status>))]
     class Status : OneOfBase<Status.Idle, Status.Started, Status.Stopped> {
-        public class Stopped : OneOfCase {
+        public class Stopped : OneOfCase
+        {
             public IEnumerable<Status> PreviousStatuses { get; }
 
             public Stopped(IEnumerable<Status> previousStatuses)
@@ -14,6 +15,7 @@ namespace OneOf.Serialization
                 PreviousStatuses = previousStatuses;
             }
         }
+
         public class Idle : OneOfCase
         {
         }
@@ -27,11 +29,12 @@ namespace OneOf.Serialization
                 Readiness = readiness;
             }
         }
+
         public static implicit operator Status(Idle value) {
             return value == null ? value : new Status(value);
         }
         public Status(Idle value): base(0, value) {}
-        
+
         public static implicit operator Status(Started value) {
             return value == null ? value : new Status(value);
         }

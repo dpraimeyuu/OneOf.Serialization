@@ -8,3 +8,5 @@
 /**/obj/Release/**
 /**/obj/**
 /**/bin/**
+
+.vs/**

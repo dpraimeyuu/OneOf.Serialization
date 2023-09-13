@@ -9,8 +9,8 @@ namespace OneOf.Serialization
 {
     public class OneOfCase
     {
-
         public string Value { get; private set; }
+
         public OneOfCase()
         {
             Value = this.GetType().Name;
@@ -25,6 +25,8 @@ namespace OneOf.Serialization
 
     public class OneOfJsonConverter<T> : JsonConverter
     {
+        private static readonly List<Type> EmptyTypeList = new List<Type> (0);
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value is IOneOf v)
@@ -35,35 +37,59 @@ namespace OneOf.Serialization
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType != JsonToken.StartObject)
-                return existingValue;
-            var obj = JObject.Load(reader);
-            var instance = DeserializeToDiscriminatedUnion(obj, objectType);
+            if (reader.TokenType == JsonToken.StartObject)
+            {
+                var obj = JObject.Load(reader);
+                var value = DeserializeToDiscriminatedUnion(obj, objectType);
+                return CreateInstance(value);
+            }
+            else if (reader.TokenType == JsonToken.StartArray)
+            {
+                var array = JArray.Load(reader);
+                var valuesArray = DeserializeToDiscriminatedUnionArray(array, objectType);
+                return CreateArrayInstance(valuesArray);
+            }
 
-            return CreateInstance(instance);
+            return existingValue;
         }
 
         private object DeserializeToDiscriminatedUnion(JObject obj, Type objectType)
         {
-            var oneOfCaseTypes = objectType?.BaseType?.GenericTypeArguments.ToList() ?? new List<Type>();
-            object result = null;
+            var oneOfCaseTypes = objectType?.BaseType?.GenericTypeArguments.ToList() ?? EmptyTypeList;
             foreach (var oneOfDiscriminatedUnion in oneOfCaseTypes)
             {
                 string json = obj.ToString();
                 var oneOfCase = JsonConvert.DeserializeObject<OneOfCase>(json);
                 if (oneOfCase.Value == oneOfDiscriminatedUnion.Name)
-                {
-                    var subType = JsonConvert.DeserializeObject(json, oneOfDiscriminatedUnion);
-                    return subType;
-                }
+                    return JsonConvert.DeserializeObject(json, oneOfDiscriminatedUnion);
             }
 
-            return result;
+            return null;
+        }
+
+        private Array DeserializeToDiscriminatedUnionArray(JArray array, Type objectType)
+        {
+            var arrayArgTypes = objectType?.GenericTypeArguments.ToList() ?? EmptyTypeList;
+            if (arrayArgTypes.Count != 1 || !arrayArgTypes[0].GetInterfaces().Contains(typeof(IOneOf)))
+                return null;
+
+            var oneOfArray = Array.CreateInstance(arrayArgTypes[0], array.Count);
+            for (int i = 0, num = array.Count; i < num; ++i)
+            {
+                string json = array[i].ToString();
+                oneOfArray.SetValue(JsonConvert.DeserializeObject(json, arrayArgTypes[0]), i);
+            }
+            return oneOfArray;
         }
 
         private T CreateInstance(params object[] paramArray)
         {
             return (T)Activator.CreateInstance(typeof(T), args: paramArray);
+        }
+
+        private T CreateArrayInstance(Array valuesArray)
+        {
+            return (T)Activator.CreateInstance(typeof(T), new object[] { valuesArray });
         }
 
         public override bool CanConvert(Type objectType)
