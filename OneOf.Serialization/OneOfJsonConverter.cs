@@ -46,8 +46,8 @@ namespace OneOf.Serialization
             else if (reader.TokenType == JsonToken.StartArray)
             {
                 var array = JArray.Load(reader);
-                var valuesArray = DeserializeToDiscriminatedUnionArray(array, objectType);
-                return CreateArrayInstance(valuesArray);
+                var valueArray = DeserializeToDiscriminatedUnionArray(array, objectType);
+                return CreateArrayInstance(valueArray);
             }
 
             return existingValue;
@@ -87,9 +87,9 @@ namespace OneOf.Serialization
             return (T)Activator.CreateInstance(typeof(T), args: paramArray);
         }
 
-        private T CreateArrayInstance(Array valuesArray)
+        private T CreateArrayInstance(Array valueArray)
         {
-            return (T)Activator.CreateInstance(typeof(T), new object[] { valuesArray });
+            return (T)Activator.CreateInstance(typeof(T), new object[] { valueArray });
         }
 
         public override bool CanConvert(Type objectType)

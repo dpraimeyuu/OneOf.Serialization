@@ -1,0 +1,17 @@
+{
+  "CodeName": "CE2",
+  "ReleaseDate": "2021-06-15T11:30:00Z",
+  "Type": 1,
+  "Fuel": [ 1, "Gas" ],
+  "Performance": {
+    "PistonCount": 4,
+    "PistonAngle": 90.0,
+    "HorsePower": 175,
+    "Torque": 2800,
+    "IsSporty": 0.5
+  },
+  "Notes": {
+    "StrongPointsList": [ "Has great fuel economy" ],
+    "WeakPoints": "Is somewhat sluggish"
+  }
+}

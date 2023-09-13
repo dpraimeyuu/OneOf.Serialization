@@ -1,0 +1,49 @@
+[
+  {
+  },
+  {
+    "CodeName": "CE1",
+    "ReleaseDate": "2021-01-20T12:00:00Z",
+    "Type": "InternalCombustion",
+    "Fuel": [ "Petrol", "Gas" ],
+    "Performance": {
+      "PistonCount": 4,
+      "PistonAngle": "_90_Degrees",
+      "HorsePower": 175,
+      "Torque": 2800,
+      "IsSporty": true
+    },
+    "Notes": "This engine has great fuel economy, but is somewhat sluggish"
+  },
+  {
+    "CodeName": "CE2b",
+    "ReleaseDate": "2022-03-07T09:10:30Z",
+    "Type": 1,
+    "Fuel": [ 2 ],
+    "Performance": {
+      "PistonCount": 4,
+      "PistonAngle": 90.0,
+      "HorsePower": 185,
+      "Torque": 2900,
+      "IsSporty": 0.6
+    },
+    "Notes": {
+      "StrongPointsList": [ "Has great fuel economy" ],
+      "WeakPoints": "Is only a bit sluggish"
+    }
+  },
+  {
+    "CodeName": "CE3",
+    "ReleaseDate": "2023-09-11T15:20:25Z",
+    "Type": "Electric",
+    "Fuel": [ 4 ],
+    "Performance": {
+      "PistonCount": 0,
+      "PistonAngle": -1,
+      "HorsePower": 220,
+      "Torque": 3200,
+      "IsSporty": 0.75
+    },
+    "Notes": "This engine has fast reaction times"
+  }
+]
