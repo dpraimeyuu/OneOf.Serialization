@@ -8,7 +8,7 @@ Sooner or later we would need to serialize/deserialize our lovely discriminated 
 
 1. Take your discriminated union and annotate it with `JsonConvert` attribute, giving `OneOfJsonConverter<T>` as an argument (where `T` is your discriminated union)
 ```csharp
-[JsonConvert(typeof(OneOfJsonConverter<Status>))]
+[JsonConverter(typeof(OneOfJsonConverter<Status>))]
 public class Status : OneOfBase<Idle, Running, Completed> {
     
     // Recommended way of seamless consuming/creating cases
