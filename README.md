@@ -7,7 +7,7 @@ Sooner or later we would need to serialize/deserialize our lovely discriminated 
 # How to use it?
 1. Take your discriminated union and annotate it with `JsonConvert` attribute, giving `OneOfJsonConverter<T>` as an argument (where `T` is your discriminated union)
 
-**NOTE**: ⚠️ The way we prepare our `OneOf` class is dependent on the original `OneOf` package version ⚠️ 
+**NOTE**: ⚠️ The way we prepare our `OneOf` class depends on the original `OneOf` package version ⚠️ 
 
 * `OneOf` version `2.x.x`  (without `GenerateOneOf` support)
 ```csharp
