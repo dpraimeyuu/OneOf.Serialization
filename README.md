@@ -5,20 +5,32 @@ Sooner or later we would need to serialize/deserialize our lovely discriminated 
 **NOTE**: `OneOf.Serialization` has direct dependecy on `Newtonsoft.Json`.
 
 # How to use it?
-
 1. Take your discriminated union and annotate it with `JsonConvert` attribute, giving `OneOfJsonConverter<T>` as an argument (where `T` is your discriminated union)
+
+**NOTE**: ⚠️ The way we prepare our `OneOf` class is dependent on the original `OneOf` package version ⚠️
+
+* `OneOf` version `2.x.x`  (without `GenerateOneOf` support)
 ```csharp
 [JsonConverter(typeof(OneOfJsonConverter<Status>))]
 public class Status : OneOfBase<Idle, Running, Completed> {
     
-    // Recommended way of seamless consuming/creating cases
     public Status(Idle idle) : base(0, idle) {}
-    public Status(Running running) : base(1, null, idle) {}
-    public Status(Completed completed) : base(2, null, null, completed)
+    public Status(Running running) : base(1, null, running) {}
+    public Status(Completed completed) : base(2, null, null, completed) {}
 
     public static implicit operator Status(Idle value) => value == null? null : new Status(value);
     public static implicit operator Status(Running value) => value == null? null : new Status(value);
     public static implicit operator Status(Completed value) => value == null? null : new Status(value);
+}
+```
+* `OneOf` version `3.x.x` (supporting `GenerateOneOf` based on Source Generators)
+```csharp
+[JsonConverter(typeof(OneOfJsonConverter<Status>))]
+[GenerateOneOf]
+public partial class Status : OneOfBase<Idle, Running, Completed> {
+    public Status(Idle idle) : base(idle) {}
+    public Status(Running running) : base(running) {}
+    public Status(Completed completed) : base(completed) {}
 }
 ```
 
