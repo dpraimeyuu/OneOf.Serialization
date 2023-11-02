@@ -1,0 +1,14 @@
+{
+  "CodeName": "CE1",
+  "ReleaseDate": "2021-01-20T12:00:00Z",
+  "Type": "InternalCombustion",
+  "Fuel": [ "Petrol", "Gas" ],
+  "Performance": {
+    "PistonCount": 4,
+    "PistonAngle": "_90_Degrees",
+    "HorsePower": 175,
+    "Torque": 2800,
+    "IsSporty": true
+  },
+  "Notes": "This engine has great fuel economy, but is somewhat sluggish"
+}
